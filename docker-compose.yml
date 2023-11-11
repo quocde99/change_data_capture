@@ -83,7 +83,7 @@ services:
     depends_on:
       - minio
     entrypoint: >
-      /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 minio minio123; /usr/bin/mc rm -r --force myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy download myminio/commerce;  /usr/bin/mc cp /tmp/data myminio/commerce; exit 0;  "
+      /bin/sh -c "sleep 10 &&  /usr/bin/mc config host add myminio http://minio:9000 minio minio123; sleep 10; /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy download myminio/commerce;  exit 0;  "
 
   datagen:
     build:
@@ -93,6 +93,17 @@ services:
       - python
       - ./gen_user_payment_data.py
     container_name: datagen
+    restart: on-failure
+    depends_on:
+      - postgres_custom
+  job:
+    build:
+      context: .
+      dockerfile: ./container/job/Dockerfile
+    entrypoint:
+      - python
+      - ./main/main.py
+    container_name: job
     restart: on-failure
     depends_on:
       - postgres_custom

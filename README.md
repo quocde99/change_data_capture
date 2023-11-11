@@ -1,2 +1,10 @@
 # Change Data Capture (Project) - Debezium and Kafka Connect
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic debezium.commerce.products --from-beginning --max-messages 10
+### How to start?
+start containter
+```bash
+make up
+```
+create connector kafka connect
+```bash
+make connectors
+```
