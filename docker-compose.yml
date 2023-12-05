@@ -111,10 +111,10 @@ services:
     image: obsidiandynamics/kafdrop:latest
     restart: "no"
     ports:
-      - "9010:9010"
+      - "9999:9999"
     environment:
       KAFKA_BROKERCONNECT: "kafka:9092"
-      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+      # JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     depends_on:
       - "kafka"
   debezium-ui:
@@ -127,6 +127,26 @@ services:
     tty: true
     stdin_open: true
     restart: unless-stopped
+    # add elastic search
+  target_db:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+    ports:
+      - "9200:9200"
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.0
+    restart: on-failure
+    ports:
+      - 5601:5601
+    environment:
+      - xpack.security.enabled=false
+      - ELASTICSEARCH_HOSTS=http://target_db:9200
+    depends_on:
+      - target_db
 volumes:
   zookeeper_data:
     driver: local
