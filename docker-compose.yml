@@ -9,7 +9,6 @@ services:
       - "zookeeper_data:/bitnami"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-
   kafka:
     image: docker.io/bitnami/kafka:3.4
     ports:
@@ -21,7 +20,7 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://kafka:9093
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
     depends_on:
       - zookeeper
@@ -62,7 +61,17 @@ services:
       - "postgres"
       - "-c"
       - "wal_level=logical"
-
+  kafdrop:
+    image: obsidiandynamics/kafdrop:3.28.0
+    restart: "no"
+    ports:
+      - "9050:9050"
+    environment:
+      SERVER_PORT: 9050
+      KAFKA_BROKERCONNECT: "kafka:9093"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
   minio:
     image: quay.io/minio/minio:RELEASE.2022-05-26T05-48-41Z
     hostname: minio
@@ -107,16 +116,6 @@ services:
     restart: on-failure
     depends_on:
       - postgres_custom
-  kafdrop:
-    image: obsidiandynamics/kafdrop:latest
-    restart: "no"
-    ports:
-      - "9999:9999"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka:9092"
-      # JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
-    depends_on:
-      - "kafka"
   debezium-ui:
     image: quay.io/debezium/debezium-ui:2.0
     container_name: debezium-ui
@@ -127,26 +126,6 @@ services:
     tty: true
     stdin_open: true
     restart: unless-stopped
-    # add elastic search
-  target_db:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
-    ports:
-      - "9200:9200"
-    environment:
-      - http.host=0.0.0.0
-      - transport.host=127.0.0.1
-      - xpack.security.enabled=false
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.3.0
-    restart: on-failure
-    ports:
-      - 5601:5601
-    environment:
-      - xpack.security.enabled=false
-      - ELASTICSEARCH_HOSTS=http://target_db:9200
-    depends_on:
-      - target_db
 volumes:
   zookeeper_data:
     driver: local
