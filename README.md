@@ -37,9 +37,9 @@ create connector kafka connect:
 make connectors
 ```
 Result
-[MinIo]([http://localhost:9000/])
-[Debezium UI]([localhost:8080/))
-[Kafdrop]([http://localhost:9050/))
+[MinIo](http://localhost:9000/)
+[Debezium UI](http://localhost:8080/)
+[Kafdrop](http://localhost:9050/)
 down docker compose
 ```bash
 make down
