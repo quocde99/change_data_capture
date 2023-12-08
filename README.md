@@ -18,9 +18,9 @@ This project is a demonstration of Change Data Capture (CDC) using Debezium to c
     - `init.sql`
   - **datagen**
     - `gen_user_payment_data.py`
-- **dategen**
-  - `test_main.py`
+- `Makefile`
 - `docker-compose.yml`
+- `README.md`
 ### How to start?
 clone repository
 ```bash
