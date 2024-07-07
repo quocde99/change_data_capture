@@ -11,6 +11,7 @@
         "database.server.name": "postgres",
         "database.include.list": "postgres",
         "topic.prefix": "debezium",
+        "topic.creation.default.partitions":"2",
         "schema.include.list": "commerce",
         "plugin.name": "pgoutput"
     }
