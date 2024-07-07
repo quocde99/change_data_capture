@@ -1,88 +1,69 @@
-version: "2"
+version: "3"
 
 services:
-  zookeeper:
-    image: docker.io/bitnami/zookeeper:3.8
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: echo stat | nc localhost 2181
-      interval: 10s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - "zookeeper_data:/bitnami"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-      - ZOOKEEPER_SERVER_ID=1
-      - ZOOKEEPER_CLIENT_PORT=2181
-      - ZOOKEEPER_TICK_TIME=2000
-      - ZOOKEEPER_INIT_LIMIT=3
-      - ZOOKEEPER_SYNC_LIMIT=3
-      - ZOOKEEPER_INSTANCE_ENTRIES=3
-      - ZOOKEEPER_SERVERS=zookeeper:2888:3888
   kafka-1:
-    image: docker.io/bitnami/kafka:3.4
-    ports:
-      - "9091:9091"
-    volumes:
-      - "kafka_data:/bitnami_1"
-    environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9091
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9091
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_BROKER_ID=1
-      - BOOTSTRAP_SERVERS=kafka-1:9091,kafka-2:9092,kafka-3:9093
-      - KAFKA_AUTO_LEADER_REBALANCE_ENABLE=true
-      - ZOOKEEPER=zookeeper:2181
-    depends_on:
-      - zookeeper
-
-  kafka-2:
-    image: docker.io/bitnami/kafka:3.4
+    image: confluentinc/cp-kafka
+    container_name: kafka-1
+    hostname: kafka-1
     ports:
       - "9092:9092"
-    volumes:
-      - "kafka_data:/bitnami_2"
     environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9092
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_BROKER_ID=2
-      - KAFKA_AUTO_LEADER_REBALANCE_ENABLE=true
-      - BOOTSTRAP_SERVERS=kafka-1:9091,kafka-2:9092,kafka-3:9093
-      - ZOOKEEPER=zookeeper:2181
-    depends_on:
-      - zookeeper
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka-1:29092,CONTROLLER://kafka-1:29093,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka-1:29092,EXTERNAL://localhost:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'ciWo7IWazngRchmPES6q5A=='
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
 
-  kafka-3:
-    image: docker.io/bitnami/kafka:3.4
+  kafka-2:
+    image: confluentinc/cp-kafka
+    container_name: kafka-2
+    hostname: kafka-2
     ports:
       - "9093:9093"
-    volumes:
-      - "kafka_data:/bitnami_3"
     environment:
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9093
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9093
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_BROKER_ID=3
-      - KAFKA_AUTO_LEADER_REBALANCE_ENABLE=true
-      - BOOTSTRAP_SERVERS=kafka-1:9091,kafka-2:9092,kafka-3:9093
-      - ZOOKEEPER=zookeeper:2181
-    depends_on:
-      - zookeeper
-  # cruise-control:
-  #   image: adaptorel/kafka-cruise-control:latest
-  #   ports:
-  #     - "9090:9090"
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka-1:9091,kafka-2:9092,kafka-3:9093
-  #     - ZOOKEEPER_CONNECT=zookeeper:2181
-  #   depends_on:
-  #     - kafka-1
-  #     - kafka-2
-  #     - kafka-3
-  #     - zookeeper
+      KAFKA_NODE_ID: 2
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka-2:29092,CONTROLLER://kafka-2:29093,EXTERNAL://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka-2:29092,EXTERNAL://localhost:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'ciWo7IWazngRchmPES6q5A=='
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+
+  kafka-3:
+    image: confluentinc/cp-kafka
+    container_name: kafka-3
+    hostname: kafka-3
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka-3:29092,CONTROLLER://kafka-3:29093,EXTERNAL://0.0.0.0:9094'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka-3:29092,EXTERNAL://localhost:9094'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      CLUSTER_ID: 'ciWo7IWazngRchmPES6q5A=='
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+
 
   connect:
     build:
@@ -96,14 +77,12 @@ services:
       - GROUP_ID=1
       - CONFIG_STORAGE_TOPIC=my-connect-configs
       - OFFSET_STORAGE_TOPIC=my-connect-offsets
-      - BOOTSTRAP_SERVERS=kafka-1:9091,kafka-2:9092,kafka-3:9093
+      - BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:29092,kafka-3:29092
     links:
-      - zookeeper:zookeeper
       - kafka-1:kafka-1
       - kafka-2:kafka-2
       - kafka-3:kafka-3
     depends_on:
-      - zookeeper
       - kafka-1
       - kafka-2
       - kafka-3
@@ -131,7 +110,7 @@ services:
       - "9050:9050"
     environment:
       SERVER_PORT: 9050
-      KAFKA_BROKERCONNECT: "kafka-1:9091,kafka-2:9092,kafka-3:9093"
+      KAFKA_BROKERCONNECT: "kafka-1:29092,kafka-2:29092,kafka-3:29092"
       JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     depends_on:
       - "kafka-1"
@@ -192,9 +171,13 @@ services:
     stdin_open: true
     restart: unless-stopped
 volumes:
-  zookeeper_data:
-    driver: local
+  # zookeeper_data:
+  #   driver: local
   kafka_data:
     driver: local
   postgres_data:
     driver: local
+networks:
+  default:
+    name: my-network
+    external: true
