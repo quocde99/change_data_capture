@@ -1,5 +1,6 @@
 up:
 	docker compose up -d --build
+	
 
 remove-minio-data:
 	rm -rf ./minio/data
@@ -7,7 +8,12 @@ remove-minio-data:
 compose-down:
 	docker compose down -v
 
+monitor-down:
+	docker-compose -f docker-compose-monitoring.yml down
+
 down: compose-down remove-minio-data
+
+down-monitor: monitor-down
 
 minio-ui:
 	open http://localhost:9001
@@ -33,5 +39,7 @@ s3-sink: check_port
 	echo "Connector configuration:" ; \
 	cat $(S3_SINK_CONNECTOR) ; \
 	curl -v -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '@$(S3_SINK_CONNECTOR)'
+monitor:
+	docker-compose -f docker-compose-monitoring.yml up -d
 
 connectors: pg-src s3-sink

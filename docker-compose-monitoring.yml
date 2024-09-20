@@ -1,0 +1,33 @@
+services:
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    command: 
+      - "--kafka.server=kafka-1:29092"
+    ports:
+      - 9308:9308
+    networks:
+      - my-network
+  prometheus:
+    image: bitnami/prometheus:2.48.0
+    volumes:
+      - ./prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml
+    ports:
+      - 9099:9090
+  grafana:
+    image: grafana/grafana:10.2.2
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+ 
+networks:
+  my-network:
+    external: true

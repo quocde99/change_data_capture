@@ -48,3 +48,7 @@ down docker compose
 ```bash
 make down
 ```
+### desribe kafka topic
+sh /bin/kafka-console-consumer --topic debezium.commerce.orders  --bootstrap-server kafka-1:29092,kafka-2:29092,kafka-3:29092
+
+sh /bin/kafka-topics --topic debezium.commerce.orders  --bootstrap-server kafka-1:29092,kafka-2:29092,kafka-3:29092 --describe
