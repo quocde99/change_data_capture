@@ -2,7 +2,7 @@
 ### Overview
 This project is a demonstration of Change Data Capture (CDC) using Debezium to capture changes from PostgreSQL through Kafka Connect and store them in S3.
 ### Architecture of demo
-![Architecture](./image/demo-debezium.png)
+![Architecture](./image/system.png)
 ### Structure of source:
 #### src (Source Code)
 - **connectors**
