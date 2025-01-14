@@ -1,4 +1,4 @@
-FROM debezium/connect:latest
+FROM debezium/connect:2.7.2.Final
 
 USER kafka
 

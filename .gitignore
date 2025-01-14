@@ -1,1 +1,3 @@
 /minio
+.env
+__pycache__

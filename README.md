@@ -36,6 +36,10 @@ create connector kafka connect:
 ```bash
 make connectors
 ```
+
+```bash
+make spark
+```
 Result
 
 [MinIo](http://localhost:9000/)  

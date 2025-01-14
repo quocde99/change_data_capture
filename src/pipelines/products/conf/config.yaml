@@ -1,0 +1,4 @@
+topic_name: "debezium.commerce.products"
+bootstrap_server: "kafka:9092"
+spark_version: "3.5.2"
+scala_version: "2.12"

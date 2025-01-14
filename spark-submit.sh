@@ -1,0 +1,1 @@
+docker exec -it change_data_capture-spark-master-1 bash -c "/opt/bitnami/spark/bin/spark-submit --packages "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.0,org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.7.1"  --master spark://spark-master:7077 /opt/spark-app/src/pipelines/products/spark_streaming_products.py"
