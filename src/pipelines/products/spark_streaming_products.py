@@ -1,5 +1,4 @@
 from pyspark.sql import SparkSession
-from pyspark.streaming import StreamingContext
 from pyspark.sql.functions import explode,max, min, from_json, col, expr
 import logging
 import os
